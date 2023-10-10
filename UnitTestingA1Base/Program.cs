@@ -1,7 +1,6 @@
 #region Setup
 using UnitTestingA1Base.Data;
 using UnitTestingA1Base.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
@@ -10,7 +9,7 @@ app.UseHttpsRedirection();
 
 // Application Storage persists for single session
 AppStorage appStorage = new AppStorage();
-BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);    
+BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
 #endregion
 
 
@@ -33,11 +32,12 @@ BusinessLogicLayer bll = new BusinessLogicLayer(appStorage);
 /// </summary>
 app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
 {
-    try 
+    try
     {
         HashSet<Recipe> recipes = bll.GetRecipesByIngredient(id, name);
         return Results.Ok(recipes);
-    } catch(Exception ex)
+    }
+    catch (Exception ex)
     {
         return Results.NotFound();
     }
@@ -48,7 +48,15 @@ app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
 /// </summary>
 app.MapGet("/recipes/byDiet", (string name, int id) =>
 {
-
+    try
+    {
+        HashSet<Recipe> recipes = bll.GetRecipesByDietaryRestriction(id, name);
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 ///<summary>
@@ -56,7 +64,15 @@ app.MapGet("/recipes/byDiet", (string name, int id) =>
 /// </summary>
 app.MapGet("/recipes", (string name, int id) =>
 {
-
+    try
+    {
+        HashSet<Recipe> recipes = bll.GetRecipesByIdOrName(id, name);
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 ///<summary>
@@ -72,8 +88,21 @@ app.MapGet("/recipes", (string name, int id) =>
 /// 
 /// All IDs should be created for these objects using the returned value of the AppStorage.GeneratePrimaryKey() method
 /// </summary>
-app.MapPost("/recipes", () => {
-
+app.MapPost("/recipes", (RecipeWithIngredients newRecipe) =>
+{
+    try
+    {
+        bll.AddNewRecipeWithIngredients(newRecipe);
+        return Results.Ok();
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest();
+    }
 });
 
 ///<summary>
@@ -83,7 +112,19 @@ app.MapPost("/recipes", () => {
 ///</summary>
 app.MapDelete("/ingredients", (int id, string name) =>
 {
-
+    try
+    {
+        if (bll.GetRecipesByIngredient(id, name).Count >= 2)
+        {
+            return Results.Forbid();
+        }
+        bll.DeleteIngredient(id, name);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 /// <summary>
@@ -92,10 +133,20 @@ app.MapDelete("/ingredients", (int id, string name) =>
 /// </summary>
 app.MapDelete("/recipes", (int id, string name) =>
 {
-
+    try
+    {
+        bll.DeleteRecipe(id, name);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 #endregion
 
 
 app.Run();
+
+

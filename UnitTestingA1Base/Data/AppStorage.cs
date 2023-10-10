@@ -15,14 +15,14 @@ namespace UnitTestingA1Base.Data
         public HashSet<Recipe> Recipes { get; set; }
         public HashSet<DietaryRestriction> DietaryRestrictions { get; set; }
         public HashSet<Ingredient> Ingredients { get; set; }
-        public HashSet<IngredientRestriction> IngredientRestrictions { get; set; }  
+        public HashSet<IngredientRestriction> IngredientRestrictions { get; set; }
         public HashSet<RecipeIngredient> RecipeIngredients { get; set; }
-        
+
         public int GeneratePrimaryKey()
         {
             return _idCount++;
         }
-        public AppStorage ()
+        public AppStorage()
         {
             Recipes = new HashSet<Recipe>
         {
@@ -195,20 +195,20 @@ namespace UnitTestingA1Base.Data
 
             RecipeIngredients = new HashSet<RecipeIngredient>
         {
-            new RecipeIngredient
-            {
-                IngredientId = 1,
-                RecipeId = 1,
-                Amount = 200,
-                MeasurementUnit = MeasurementUnit.Grams
-            },
-            new RecipeIngredient
-            {
-                IngredientId = 2,
-                RecipeId = 1,
-                Amount = 2,
-                MeasurementUnit = MeasurementUnit.Milliletres
-            },
+    new RecipeIngredient
+    {
+        IngredientId = 1,
+        RecipeId = 1,
+        Amount = 200,
+        MeasurementUnit = MeasurementUnit.Grams
+    },
+    new RecipeIngredient
+    {
+        IngredientId = 1, // Spaghetti
+        RecipeId = 2,     // Chicken Alfredo
+        Amount = 250,     // Arbitrary amount
+        MeasurementUnit = MeasurementUnit.Grams
+    },
             new RecipeIngredient
             {
                 IngredientId = 3,
